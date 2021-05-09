@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vimeo A-Frame Component</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script
+      type="text/javascript"
+      src="https://aframe.io/releases/1.2.0/aframe.min.js"
+    ></script>
+    <script type="text/javascript" src="aframe-vimeo-component.min.js"></script>
+    <script type="text/javascript" src="test.js"></script>
+    <srcript
+      src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/froogaloop.js"
+    ></srcript>
+    <!--     <script
+      type="text/javascript"
+      src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"
+    ></script> -->
+    <script
+      type="text/javascript"
+      src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.min.js"
+    ></script>
+    <!--     <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script> -->
+    <script src="https://rawcdn.githack.com/Yaugan/VideoTrial/fbbe9b03f9f7654c808641dec9a2cba619705513/script.js"></script>
+    <script src="https://cdn.rawgit.com/muaz-khan/DetectRTC/master/DetectRTC.js"></script>
+    <meta charset="utf-8" />
+    <script src="https://player.vimeo.com/api/player.js"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      .buttons {
+        position: absolute;
+        bottom: 2%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .instruction {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .imageCenter {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        top: 25%;
+        right: 0;
+        width: 100%;
+        height: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .enableCam {
+        position: absolute;
+        top: 30%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .enableCamRetryBtn {
+        position: absolute;
+        top: 65%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 11;
+      }
+
+      .videoCenter {
+        position: absolute;
+        bottom: 0;
+        left: 12%;
+        top: 0;
+        bottom: 10%;
+        right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+
+      .banner {
+        position: fixed;
+        top: 0;
+        right: 2%;
+      }
+
+      .banner_2 {
+        position: fixed;
+        top: 0;
+        left: 2%;
+      }
+
+      .clickDiv {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 80%;
+        display: flex;
+        z-index: 10;
+        visibility: hidden;
+      }
+
+      .video {
+        position: absolute;
+        width: 100%;
+        height: 5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9;
+      }
+
+      .say-hi-button {
+        padding: 0.25em;
+        border-radius: 4px;
+        border: none;
+        background: white;
+        color: black;
+        width: 4em;
+        height: 2em;
+      }
+
+      .btn:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 15px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: #fff;
+        background-color: #66CD00;
+        border: none;
+        border-radius: 19px;
+        box-shadow: 0 5px #999;
+        z-index: 11;
+      }
+
+      button:hover {
+        background-color: #458B00;
+      }
+
+      button:active {
+        background-color: #458B00;
+        box-shadow: 0 2px #666;
+        transform: translateY(4px);
+      }
+
+      #videoUI {
+        visibility: hidden;
+      }
+
+      #linkedinbutton {
+        visibility: hidden;
+      }
+
+      #phonebutton {
+        visibility: hidden;
+      }
+
+      #websitebutton {
+        visibility: hidden;
+      }
+
+      #youtubebutton {
+        visibility: hidden;
+      }
+
+      #ARUI {
+        visibility: hidden;
+      }
+
+      #camError {
+        visibility: hidden;
+      }
+
+      .img {
+        animation: MoveUpDown 2s linear infinite;
+      }
+
+      @keyframes MoveUpDown {
+        0%,
+        100% {
+          top: 0;
+        }
+        50% {
+          top: 25px;
+        }
+      }
+
+      a {
+        text-decoration: none;
+        color: white;
+      }
+
+      #plane {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body style="margin : 0px; overflow: hidden;">
+    <div id="camError">
+      <img
+        class="banner_2 img"
+        src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2FunblockCam.png?v=1620308190248"
+        style="width:50; height: auto;"
+      />
+
+      <div class="enableCam container">
+        <div class="row">
+          <div class="col-12">
+            <h1 style="text-align:center; ">
+              Enable Your Camera
+            </h1>
+            <p style="text-align:center; font-size: 85%;">
+              Accessing your device camera is required to be able to experience
+              AR, please enable your camera when asked.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="enableCamRetryBtn container">
+        <div class="row">
+          <div class="text-center">
+            <p>
+              Reload this site after allowing camera access, to view the content
+              in AR.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons container justify-content-center">
+      <div class="row">
+        <div class="col-3">
+          <button id="linkedinbutton" class="btn">
+            <img
+              src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Femail.png?v=1620308188230"
+              alt="Mail Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+        <div class="col-3">
+          <button id="phonebutton" class="btn">
+            <img
+              src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Fphone.png?v=1620308190686"
+              alt="Phone Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+        <div class="col-3">
+          <button id="websitebutton" class="btn">
+            <img
+              src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Fweb.png?v=1620308190213"
+              alt="Website Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+        <div class="col-3">
+          <button id="youtubebutton" class="btn">
+            <img
+              src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Fyoutube-V2.png?v=1620308190892"
+              alt="Youtube Button"
+              style="width:45px; height:60px;"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="videoCenter container justify-content-center">
+      <div class="row">
+        <div class="col-12">
+          <iframe
+            id="videoUI"
+            src="//player.vimeo.com/video/543486921?controls=0"
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            style="position:absolute;top:0;left:0;width:80%;height:80%;"
+            title="cardVideo.mp4"
+          >
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="clickDiv" id="clickDiv"></div>
+
+    <div id="ARUI">
+      <div class="imageCenter container justify-content-center">
+        <div class="row">
+          <div class="col-6">
+            <img
+              id="midImage"
+              src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Fpattern-ShahidDesigns.png?v=1620308192562"
+              style="height: 200px; width: 200px; opacity: 0.45;"
+            />
+          </div>
+        </div>
+      </div>
+
+      <img
+        class="banner"
+        src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Fbanner.png?v=1620308188021"
+        style="height: 25px; width:75px; background-color: rgba(255, 255, 255, 0.5); border-radius: 0px 0px 10px 10px;"
+      />
+
+      <div class="instruction card mb-1" id="bottomInstruction">
+        <div class="row g-0">
+          <div class="col-2">
+            <img
+              src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Fpattern-ShahidDesigns.png?v=1620308192562"
+              alt="Instruction"
+              style="height: 100x;width: 100px;"
+            />
+          </div>
+          <div class="col-2"></div>
+          <div class="col-6">
+            <div class="card-body">
+              <p class="card-text">
+                Point the camera to this image to see the AR magic.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a-scene
+      id="scene"
+      cursor="rayOrigin: mouse"
+      raycaster="interval: 1000; objects: .clickable"
+      vr-mode-ui="enabled: false;"
+      renderer="antialias: true; alpha: true; precision: mediump;"
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; patternRatio: 0.9;"
+    >
+      <a-marker-camera
+        emitevents="true"
+        smooth="true"
+        smoothcount="5"
+        smoothtolerance="0.001"
+        preset="custom"
+        type="pattern"
+        url="https://cdn.glitch.com/d506963c-9a55-49af-a450-7804d89a182c%2Fpattern-ShahidDesigns.patt?v=1619785479835"
+        button
+      >
+        <a-marker
+          type="pattern"
+          url="https://cdn.glitch.com/d506963c-9a55-49af-a450-7804d89a182c%2Fpattern-ShahidDesigns.patt?v=1619785479835"
+          smoothcount="0"
+          smoothtolerance="0.01"
+          button
+        >
+          <a-entity vimeo="id: 543486921;  autoplay: false;" id="vimeo-player">
+            <a-plane
+              id="plane"
+              color="#0000"
+              scale="3 1.5 1"
+              position="0 0 0.0"
+              rotation="-90 0 0"
+            >
+            </a-plane>
+          </a-entity>
+          <a-image
+            class="clickable"
+            id="Play-Image"
+            geometry="primitive: plane"
+            src="https://cdn.glitch.com/8ced84bd-c136-4b50-82fc-40c9d300f701%2Fthumbnail.png?v=1620308192221"
+            position="0 0.2 0"
+            rotation="-90 0 0"
+            scale="3 1.5 1"
+          >
+          </a-image>
+        </a-marker>
+      </a-marker-camera>
+      <a-entity camera mouse-cursor position="0 0 0"></a-entity>
+    </a-scene>
+
+    <script type="text/javascript">
+      var Lbutton = document.querySelector("#linkedinbutton");
+      var Pbutton = document.querySelector("#phonebutton");
+      var Wbutton = document.querySelector("#websitebutton");
+      var Ybutton = document.querySelector("#youtubebutton");
+      var thumbnail = document.querySelector("#Play-Image");
+      let firstTimeMarkerFound = 0;
+      let firstforvideoui = true;
+      let allow_clicks = false;
+      var clicked = false;
+      let firstTime = true;
+      var videoUI = document.querySelector("#videoUI");
+      var vidCurrentTime = 0;
+
+      var bottomInstruction = document.querySelector("#bottomInstruction");
+
+      // ************ Vimeo Stuff ************ //
+      var vimeo = document.querySelector("#vimeo-player");
+      var vimeoPlayerComponenet = document.querySelector("#vimeo-player")
+        .components;
+      var vimeoPlayer = vimeoPlayerComponenet.vimeo;
+      var scene = document.querySelector("a-scene");
+
+      var iframe = document.querySelector("iframe");
+      var player = new Vimeo.Player(iframe);
+
+      // ************ Vimeo Stuff ************ //
+
+      // vimeoPlayer.player.pause();
+      // console.log(videoUI);
+
+      //       setTimeout(() => {
+
+      //       if(timeout){
+      //         window.location.reload();
+      //         timeout = false;
+      //       }}, 2000);
+
+      vimeoPlayer.player.on("videoLoad", function(data) {
+        console.log("Video Loaded !!!");
+      });
+
+      scene.addEventListener("markerFound", evt => {
+        firstTimeMarkerFound += 1;
+
+        if (firstTimeMarkerFound > 1) {
+          bottomInstruction.style.visibility = "hidden";
+          midImage.style.visibility = "hidden";
+          clickDiv.style.visibility = "visible";
+          allow_clicks = true;
+          console.log(allow_clicks);
+        }
+
+        if (!firstTime) {
+          vimeoPlayer.player.play();
+          videoUI.style.visibility = "hidden";
+          player.pause();
+        }
+      });
+
+      scene.addEventListener("markerLost", evt => {
+        // videoUI.style.visibility = "visible";
+        // player.play();
+        allow_clicks = false;
+        vimeoPlayer.player.pause();
+
+        if (!firstforvideoui) {
+          videoUI.style.visibility = "visible";
+          player.play();
+        }
+        if (!allow_clicks && !clicked) {
+          bottomInstruction.style.visibility = "visible";
+          midImage.style.visibility = "visible";
+        }
+      });
+
+      clickDiv.addEventListener("click", evt => {
+        console.log("Click Event !!!");
+        if (allow_clicks) {
+          thumbnail.setAttribute("visible", false);
+          document.querySelector("#plane").style.visibility = "visible";
+          Lbutton.style.visibility = "visible";
+          Pbutton.style.visibility = "visible";
+          Wbutton.style.visibility = "visible";
+          Ybutton.style.visibility = "visible";
+
+          player.play();
+          player.pause();
+
+          vimeoPlayer.player.play();
+
+          firstTime = false;
+          firstforvideoui = false;
+          clicked = true;
+        }
+      });
+
+      Lbutton.addEventListener("click", function(evt) {
+        window.location.href = "mailto: shahid@ecnetsolutions.ca";
+      });
+
+      Wbutton.addEventListener("click", function(evt) {
+        window.open("https://www.ecnetsolutions.ca", "_blank");
+      });
+
+      Pbutton.addEventListener("click", function(evt) {
+        window.location = "tel: +1-416-902-4508";
+      });
+
+      Ybutton.addEventListener("click", function(evt) {
+        window.open(
+          "https://www.youtube.com/channel/UC3CianWhgE8ieSDPWUIWhHg",
+          "_blank"
+        );
+      });
+
+      DetectRTC.load(function() {
+        if (DetectRTC.isWebsiteHasWebcamPermissions) {
+          document.querySelector("#ARUI").style.visibility = "visible";
+        } //else {
+        //     console.log("User gave camera permission");
+        //     document.querySelector("#unblockCam").style.visibility = "visible";
+        //     document.querySelector("#enableCam").style.visibility = "visible";
+        //   }
+
+        // if (
+        //   DetectRTC.browser.name != "Chrome" &&
+        //   DetectRTC.browser.name != "Firefox"
+        // ) {
+        //   document.querySelector("#bestExperience").style.visibility = "visible";
+        // }
+      });
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
